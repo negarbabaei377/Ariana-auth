@@ -1,6 +1,5 @@
 import axios from "axios";
 import {TOKEN} from "../config/variables.config";
-import {PATH} from '../config/path.config';
 import {LOGIN} from "../config/endpoint.config";
 import {toast} from 'react-toastify';
 
@@ -9,8 +8,8 @@ class Http {
         axios.defaults.baseURL = "https://mock.arianalabs.io/api"
         axios.interceptors.request.use((config) => {
             const token = localStorage.getItem(TOKEN)
-            if (token !== undefined && token !== "" && config.url !== LOGIN) {
-                config.headers['token'] = `${token}`
+            if (token && !config.url.includes(LOGIN)) {
+                config.headers.Authorization = `Token ${token}`;
             }
             return config
         }, (error) => {
@@ -21,7 +20,6 @@ class Http {
         }, (error) => {
             if (error.response.status === 401) {
                 localStorage.removeItem(TOKEN)
-                window.location.href = PATH.LOGIN
             } else {
                 toast.error(error.response.data)
             }
@@ -41,4 +39,4 @@ class Http {
     }
 }
 
-export default new Http;
+export default new Http();
